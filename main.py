@@ -28,7 +28,18 @@ async def get_post():
 
 @app.post('/api/v1/blogs')
 async def create_post(blog:Blog):
-    return Blog_db.append(blog)
+    Blog_db.append(blog)
+    return blog.id
+
+@app.get('/api/v1/blog{blog_id}')
+async def get_single_post(blog_id:UUID):
+    for post in Blog_db:
+        if post.id ==blog_id:
+            return post
+    raise HTTPException(
+        status_code = 404,
+        detail = 'post does not exist'
+    )
 
 @app.delete('/api/v1/blog/{blog_id}')
 async def delete_post(blog_id:UUID):
@@ -38,7 +49,7 @@ async def delete_post(blog_id:UUID):
             return 'deleted'
     raise HTTPException(
         status_code =404,
-        detail = 'user does not exist '
+        detail = 'post does not exist '
     )
 @app.put('/api/v1/blog/{blog_id}')
 async def update_post(update_post:update_Blog_Request,blog_id:UUID):
