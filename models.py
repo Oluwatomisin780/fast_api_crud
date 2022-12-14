@@ -1,7 +1,8 @@
 from datetime import date
+from email.message import EmailMessage
 from enum import Enum
 from uuid import UUID, uuid4
-from  pydantic import BaseModel
+from  pydantic import BaseModel,EmailStr
 from typing import Optional,List
 from uuid import UUID,uuid4
 class Gender(str,Enum):
@@ -13,7 +14,15 @@ class Role(str,Enum):
     user = "user"
     student = 'student'
 
-
+class User (BaseModel):
+    id:Optional[UUID] = uuid4()
+    name: str
+    email: EmailStr
+    password:str 
+    
+class User_Login(BaseModel):
+    email: EmailStr
+    password:str 
 
 class Blog(BaseModel):
     id:Optional[UUID]= uuid4()

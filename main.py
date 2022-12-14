@@ -2,8 +2,9 @@ from http.client import HTTPException
 from typing import List
 from uuid import UUID, uuid4
 from fastapi import FastAPI
-from models import Blog, update_Blog_Request
+from models import Blog, update_Blog_Request,User,User_Login
 from typing import List
+from auth.jwt_handler import signJWT
 app =FastAPI()
 
 Blog_db:List[Blog] = [
@@ -17,6 +18,16 @@ Blog_db:List[Blog] = [
    
     
 ]
+User_db: List[User]= [
+   User (
+       id ='842d6722-629b-4eed-a935-3bf57e081ef7',
+       name = 'oluwatomisin',
+       email = 'tomisinoyediran@gmail.com',
+       password  =  'oluwatomisn'
+    )
+]
+
+
 
 @app.get('/')
 async def root():
@@ -68,4 +79,25 @@ async def update_post(update_post:update_Blog_Request,blog_id:UUID):
         status_code =404,
         detail=(f'blog with {blog_id} does not exist')
     )
-            
+
+@app.post('/api/v1/users')
+async def user_signup(user:User):
+    User_db.append(user)
+    return signJWT(user.email)
+
+def check_user (data:User_Login):
+    for user in User_db:
+        if user.email == data.email and user.password == data.password:
+            return True
+        else:
+            return False
+
+
+@app.post('/api/v1/user/login')
+async def user_login(user:User_Login):
+    if check_user(user):
+        return signJWT(user.email)
+    else:
+        return{
+            'errror':'invalid credentials'
+        }
