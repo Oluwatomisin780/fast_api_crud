@@ -85,12 +85,11 @@ async def user_signup(user:User):
     User_db.append(user)
     return signJWT(user.email)
 
-def check_user (data:User_Login):
+async def check_user (data:User_Login):
     for user in User_db:
         if user.email == data.email and user.password == data.password:
             return True
-        else:
-            return False
+        return False
 
 
 @app.post('/api/v1/user/login')
